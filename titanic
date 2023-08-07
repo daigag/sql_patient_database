@@ -1,0 +1,363 @@
+import pandas as pd
+import pandasql as ps
+add Codeadd Markdown
+titanic = pd.read_csv('https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv')
+add Codeadd Markdown
+titanic.head(5)
+add Codeadd Markdown
+ps.sqldf("""SELECT 
+    *
+    FROM titanic
+""")
+add Codeadd Markdown
+If we want to see only top 5 points from our dataset and instead of using complete name we can import from a shorter name
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.* FROM titanic as df LIMIT 5
+""")
+add Codeadd Markdown
+SELECTING ONLY SPECIFIC COLUMNS
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.PassengerId ,df.Survived FROM titanic AS df LIMIT 5 """)
+add Codeadd Markdown
+We can rename long columns as shorter columns
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.PassengerId AS id_of_passenger,df.Survived AS is_survived FROM titanic AS df LIMIT 10""")
+add Codeadd Markdown
+WHERE
+
+If you want only specific rows based on a condition, you can mention these conditions in "WHERE" clause. "WHERE" works row by row e.g. if the condition is Age = 10, in each row the query will check if Age is equal to 10 and if yes, then it will take that row, otherwise not.
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.* FROM titanic AS df
+WHERE df.age=5""")
+add Codeadd Markdown
+NULL
+
+To find mising values in the data, we can use "NULL" keyword. Just be mindful that NULL works with "IS" and not with "=". For example, "Age IS NULL" is the correct way of finding nulls in Age column and "Age = NULL" is not (and will throw error)
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.* FROM titanic AS df
+WHERE df.age IS NULL""")
+add Codeadd Markdown
+YOU CAN GET NON NULL ROWS BY USING "IS NOT NULL"
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.* from titanic AS df 
+WHERE df.age IS NOT NULL""")
+add Codeadd Markdown
+Use "BETWEEN" to filter between two numerical values
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.* FROM titanic AS df
+WHERE df.age BETWEEN 5 AND 10""")
+add Codeadd Markdown
+You can specify multiple conditions using "AND" or "OR" operators. Here are some examples
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.* from titanic AS df
+WHERE (df.age<1 AND df.sex="female") OR (df.age>60 AND df.sex="female")
+""")
+add Codeadd Markdown
+Using "AND" and "OR" together might be tricky at times. It is best to use parantheses to enforce which conditions will be evaluated together. E.g. in the above example we have four conditions in total. First the two conditions inside the parantheses will be evaluated separately using "AND". And then the output of those two will be evaluated using "OR" statement
+
+add Codeadd Markdown
+If there are multiple values you want to filter in a column, you can use "IN" keyword
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.* FROM titanic AS df
+WHERE df.Embarked IN ('S','C')""")
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.* FROM titanic AS df
+WHERE df.age IN (25,34,43)""")
+add Codeadd Markdown
+​
+add Codeadd Markdown
+For text/string columns, a powerful way of filtering is using "LIKE" keyword. It works by the specifying the substring you want in a string and surrounding the substring with '%'s. Here is how it looks with examples below -
+
+For Names starting with "ABC" - Name LIKE "ABC%"
+For Names ending with "ABC" - Name LIKE "%ABC"
+For Names which contain "ABC" - Name LIKE "%ABC%"
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.* FROM titanic AS df
+WHERE df.name LIKE "%Mr.%"
+LIMIT 5
+""")
+add Codeadd Markdown
+As you can see the "LIKE" condition is not case sensitive i.e. both 'mr.' and 'MR.' will be found with the same search string
+
+add Codeadd Markdown
+You can create new columns out of existing columns. Here are some examples-
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.age,
+df.age*df.age  AS age_squared
+FROM titanic AS df
+LIMIT 7
+​
+""")
+add Codeadd Markdown
+CONCATENATING TWO STRINGS AS ONE
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT
+df.Sex , df.Ticket ,
+df.Sex || df.Ticket AS sex_plus_ticker
+FROM titanic AS df
+LIMIT 10""")
+add Codeadd Markdown
+CASE WHEN
+
+You can use CASE WHEN to create new columns based on the specified conditions. Here is an example of the same -
+
+add Codeadd Markdown
+#Using CASE WHEN to create buckets for age
+ps.sqldf("""
+​
+SELECT 
+    df.Name,
+    df.PassengerID,
+    df.Age,
+    CASE WHEN df.Age IS NULL THEN '0. Missing'
+        WHEN df.Age <18 THEN '1. 1-17'
+        WHEN df.Age <60 THEN '2. 18-60'
+    ELSE '3. 60+' END AS age_bucket
+FROM titanic AS df
+LIMIT 50   
+    
+""")
+add Codeadd Markdown
+SUBSTR : function can be used to take out one part from a string upto a certain point in a string column , SUBSTR() function requires three paras (column_name,starting point,number of characters)
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.Name,
+SUBSTR(df.NAME,2,4) AS SUB_OUTPUT
+FROM titanic AS df
+LIMIT 5
+""")
+add Codeadd Markdown
+LOWER() and UPPER() can be used to convert text columns to lower and upper case, respectively. Here is an example -
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.Name,
+LOWER(df.Name) AS lower_case,
+UPPER(df.Name) AS upper_case
+FROM titanic AS df
+LIMIT 5
+""")
+add Codeadd Markdown
+You can get all the unique values in a column using "DISTINCT" keyword
+
+add Codeadd Markdown
+#selecting all distinct value of 'EMBARKED'
+ps.sqldf("""
+SELECT
+DISTINCT df.Embarked
+FROM titanic as df
+""")
+add Codeadd Markdown
+#selecting all distinct cabin of 'EMBARKED'
+ps.sqldf("""
+SELECT
+DISTINCT df.Cabin
+FROM titanic as df
+""")
+add Codeadd Markdown
+AGGREGATE
+add Codeadd Markdown
+ps.sqldf("""
+SELECT 
+df.Embarked,
+AVG(df.Age) AS avg_age,
+SUM(df.Age) AS tot_age,
+MIN(df.AGE) AS min_age,
+MAX(df.AGE) AS max_age,
+COUNT(df.PassengerId) AS tot_passengers,
+COUNT(DISTINCT df.Ticket) AS dist_tickets
+FROM titanic AS df
+GROUP BY df.embarked
+""")
+add Codeadd Markdown
+AGGREGATING INFORMATION AT TWO LEVELS
+
+add Codeadd Markdown
+AGGREGATING AT TWO LEVELS (COLUMNS)
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT
+df.Sex,
+df.Embarked,
+AVG(df.Age) AS avg_age,
+SUM(df.Age) AS sum_age,
+MIN(df.Age) AS min_age,
+MAX(df.Age) AS max_age,
+COUNT(df.PassengerId) AS total_passengers,
+COUNT(DISTINCT df.Ticket) as unique_tickets
+​
+FROM titanic as df
+GROUP BY df.Embarked,df.Sex
+""")
+add Codeadd Markdown
+Aggregating information at "Embarked" and "Sex" levels #and also using "WHERE" to filter basis some conditions
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT 
+df.Embarked,
+df.Sex,
+AVG(df.Age) as avg_tot,
+SUM(df.Age) as sum_avg,
+COUNT(df.PassengerId) as passenger_count,
+COUNT(df.Ticket) as ticket_count
+FROM titanic as df
+​
+WHERE age>=20 AND age <=50
+​
+GROUP BY df.Embarked ,df.Sex
+""")
+add Codeadd Markdown
+ps.sqldf("""
+SELECT df.Embarked,df.Age,
+AVG(df.Age) AS avg_age,
+MAX(df.Age) AS max_age,
+COUNT(df.PassengerId) AS pas_count,
+COUNT(DISTINCT df.Ticket) AS dist_ticket
+​
+FROM titanic AS df
+​
+WHERE age>=18
+​
+GROUP BY df.Embarked,df.Sex
+​
+ORDER BY df.Embarked DESC,df.Sex DESC
+""")
+add Codeadd Markdown
+HAVING
+
+Lastly, once you have aggregated the information, you can further put filters on the aggregated output using "HAVING". Always remember the difference between "WHERE" and "HAVING" as it is one of the most commonly asked interview questions. "WHERE" is used to filter the data directly from the tables while "HAVING" is used to filter the aggregated data you get as the output of a SQL
+
+add Codeadd Markdown
+#Aggregating information at "Embarked" and "Sex" levels 
+#and also using "WHERE" to filter basis some conditions
+#and also using "HAVING" for fitering the output for buckets where average age is more than 30
+#and also using "ORDER BY" for sorting the output in descending order
+ps.sqldf("""
+​
+SELECT 
+    df.Embarked,
+    df.Sex,
+    AVG(df.Age) AS avg_age,
+    SUM(df.Age) AS tot_age,
+    MIN(df.Age) AS min_age,
+    MAX(df.Age) AS max_age,
+    COUNT(df.PassengerId) AS tot_passengers,
+    COUNT(DISTINCT df.Ticket) AS dist_tickets
+    
+FROM titanic AS df
+​
+WHERE age >= 18
+    AND age <=60
+    
+GROUP BY df.Embarked,
+    df.Sex
+​
+HAVING avg_age > 30
+​
+ORDER BY df.Embarked DESC,
+    df.Sex DESC
+​
+""")
+add Codeadd Markdown
+Remember the order - First we used "WHERE", then "GROUP BY", then "HAVING" and lastly "ORDER BY"
+
+add Codeadd Markdown
+JOINS
+add Codeadd Markdown
+JOINS are one of the most important and most frequently asked concept in SQL , so let us see JOINS
+
+add Codeadd Markdown
+CREATING A NEW TABLE
+
+add Codeadd Markdown
+cities = pd.DataFrame({'code':['S','C','L'],'city':['Southampton','Cherbrough','London']})
+cities
+add Codeadd Markdown
+Let's see different unique codes in original dataset
+
+add Codeadd Markdown
+ps.sqldf("""
+SELECT DISTINCT df.Embarked
+FROM titanic as df""")
+add Codeadd Markdown
+So we can see only S and C are common in both tables
+
+add Codeadd Markdown
+INNER JOIN
+
+add Codeadd Markdown
+INNER JOIN gives rows corresponding to only the common values(in the columns used in the inner join condition) between the two tables
+
+add Codeadd Markdown
+ps.sqldf("""
+​
+SELECT 
+    c.city,
+    df.Embarked,
+    df.Sex,
+    AVG(df.Age) AS avg_age,
+    SUM(df.Age) AS tot_age,
+    MIN(df.Age) AS min_age,
+    MAX(df.Age) AS max_age,
+    COUNT(df.PassengerId) AS tot_passengers,
+    COUNT(DISTINCT df.Ticket) AS dist_tickets
+    
+FROM titanic AS df
+​
+INNER JOIN cities AS c
+    ON df.Embarked = c.code
+​
+GROUP BY df.Embarked,
+    df.Sex
+​
+""")
+add Codeadd Markdown
+ps.sqldf("""
+​
+SELECT 
+    c.city,
+    df.Embarked,
+    df.Sex,
+    AVG(df.Age) AS avg_age,
+    SUM(df.Age) AS tot_age,
+    MIN(df.Age) AS min_age,
+    MAX(df.Age) AS max_age,
+    COUNT(df.PassengerId) AS tot_passengers,
+    COUNT(DISTINCT df.Ticket) AS dist_tickets
+    
+FROM titanic AS df
+​
+LEFT JOIN cities AS c
+    ON df.Embarked = c.code
+​
+GROUP BY df.Embarked,
+    df.Sex
+​
+""")
