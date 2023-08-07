@@ -1,0 +1,76 @@
+a] Find a total number of doctors who are child specialists.
+
+SELECT COUNT(D_id) AS Number_of_Child_Specialist_Doctors
+FROM DOCTOR
+WHERE Specilization = "Pediatrician";
+
+b] Find the name of all patients admitted to the Special ward.
+
+SELECT pt.Pname
+FROM PATIENT pt
+INNER JOIN  WARD wd ON pt.P_id = wd.P_id
+WHERE wd.W_name = "Special Ward";
+
+c] Find the Doctor name who treated ‘Arnav’
+
+SELECT dr.Dname
+FROM DOCTOR dr
+INNER JOIN TREATMENT tt ON dr.D_id = tt.D_id
+INNER JOIN PATIENT pt ON tt.P_id = pt.P_id
+WHERE pt.Pname = "Arnav";
+
+d] Find the date on which ‘Ravi' met 'Dr.Amar'
+
+SELECT tt.Appointment_Date
+FROM TREATMENT tt
+INNER JOIN PATIENT pt ON tt.P_id = pt.P_id
+INNER JOIN DOCTOR dr ON tt.D_id = dr.D_id
+WHERE pt.Pname = "Ravi" AND dr.Dname = "Dr.Amar";
+
+e] Delete all records of patient ‘Vijay’
+
+DELETE pt, tt, wd
+FROM PATIENT pt
+INNER JOIN TREATMENT tt ON pt.P_id = tt.P_id
+INNER JOIN WARD wd ON pt.P_id = wd.P_id
+WHERE pt.Pname = "Vijay";
+
+f] Find all the patient names treated by 'Dr.Vasu’
+
+SELECT pt.Pname
+FROM PATIENT pt
+INNER JOIN TREATMENT tt ON pt.P_id = tt.P_id
+INNER JOIN DOCTOR dr ON tt.D_id = dr.D_id
+WHERE dr.Dname = "Dr.Vasu";
+
+g] Find total doctors specialization wise
+
+SELECT COUNT(D_id) AS Total_Dr, Specialization
+FROM DOCTOR
+GROUP BY Specialization;
+
+h] Find the patient name starting with letter ‘P’
+
+SELECT Pname
+FROM PATIENT 
+WHERE Pname LIKE 'P%';
+
+f] Insert {2,ajay, kharghar } to PATIENT table.
+
+INSERT INTO PATIENT
+VALUES ('2','Ajay','Kharghar');
+OR
+
+INSERT INTO PATIENT (P_id, Pname, Address)
+VALUES ('2','Ajay','Kharghar');
+
+g] Delete Dr. Akash's name from the database .
+
+DELETE FROM DOCTOR
+WHERE Dname = "Dr.Akash";
+
+h] Update address to Thane of PATIENT Ravi.
+
+UPDATE PATIENT
+SET Address = "Thane"
+WHERE Pname = "Ravi";
